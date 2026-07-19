@@ -1,9 +1,8 @@
 // domController.js
-// Single Responsibility (S in SOLID): ONLY knows how to build/update DOM
-// elements. It never imports apiService — it receives data and callback
-// functions from the orchestrator (index.js). Same Dependency Inversion
-// pattern as the todo-list project: this module could be swapped out
-// without apiService ever knowing.
+// Single Responsibility: ONLY knows how to build/update DOM elements.
+// It never imports apiService — it receives a callback function from
+// the orchestrator (index.js), same Dependency Inversion pattern used
+// in the other projects.
 
 const appRoot = document.getElementById('app');
 
@@ -14,38 +13,33 @@ function render(callbacks) {
   container.className = 'app-container';
 
   const heading = document.createElement('h1');
-  heading.textContent = 'GIF Search';
+  heading.textContent = 'Weather App';
   container.appendChild(heading);
 
-  container.appendChild(renderSearchBox(callbacks));
+  container.appendChild(renderSearchForm(callbacks));
 
-  const fetchBtn = document.createElement('button');
-  fetchBtn.textContent = 'Random GIF';
-  fetchBtn.className = 'btn btn--secondary';
-  fetchBtn.addEventListener('click', () => callbacks.onFetchRandom());
-  container.appendChild(fetchBtn);
-
-  const imageArea = document.createElement('div');
-  imageArea.className = 'image-area';
-  imageArea.id = 'image-area';
-  container.appendChild(imageArea);
+  // Empty for now — task 5 will add the actual weather display here.
+  const resultArea = document.createElement('div');
+  resultArea.id = 'result-area';
+  container.appendChild(resultArea);
 
   appRoot.appendChild(container);
 }
 
-function renderSearchBox(callbacks) {
+function renderSearchForm(callbacks) {
   const form = document.createElement('form');
   form.className = 'search-form';
 
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Search GIFs...';
+  input.name = 'location';
+  input.placeholder = 'Enter a city (e.g. Lima)';
   input.className = 'search-form__input';
-  input.name = 'query';
+  input.required = true;
 
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
-  submitBtn.textContent = 'Search';
+  submitBtn.textContent = 'Get Weather';
   submitBtn.className = 'btn btn--primary';
 
   form.appendChild(input);
@@ -53,57 +47,12 @@ function renderSearchBox(callbacks) {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const query = input.value.trim();
-    if (!query) return;
-    callbacks.onSearch(query);
+    const location = input.value.trim();
+    if (!location) return;
+    callbacks.onSearch(location);
   });
 
   return form;
 }
 
-function showLoading() {
-  const imageArea = document.getElementById('image-area');
-  imageArea.innerHTML = '<p class="status-text">Loading...</p>';
-}
-
-function showGif(gifData) {
-  const imageArea = document.getElementById('image-area');
-  imageArea.innerHTML = '';
-
-  const img = document.createElement('img');
-  img.src = gifData.images.original.url;
-  img.alt = gifData.title || 'GIF';
-  img.className = 'gif-image';
-
-  imageArea.appendChild(img);
-}
-
-function showGifGrid(gifDataArray) {
-  const imageArea = document.getElementById('image-area');
-  imageArea.innerHTML = '';
-
-  if (gifDataArray.length === 0) {
-    imageArea.innerHTML = '<p class="status-text">No results found. Try another search.</p>';
-    return;
-  }
-
-  const grid = document.createElement('div');
-  grid.className = 'gif-grid';
-
-  gifDataArray.forEach((gifData) => {
-    const img = document.createElement('img');
-    img.src = gifData.images.fixed_width.url;
-    img.alt = gifData.title || 'GIF';
-    img.className = 'gif-grid__image';
-    grid.appendChild(img);
-  });
-
-  imageArea.appendChild(grid);
-}
-
-function showError(message) {
-  const imageArea = document.getElementById('image-area');
-  imageArea.innerHTML = `<p class="status-text status-text--error">${message}</p>`;
-}
-
-export { render, showLoading, showGif, showGifGrid, showError };
+export { render };

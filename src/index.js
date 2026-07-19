@@ -1,10 +1,21 @@
 // index.js
-// This import is the Webpack equivalent of a <link rel="stylesheet"> tag —
-// style-loader/css-loader inject it into the page automatically.
+// Orchestrator: the only file that knows about BOTH apiService and
+// domController. Neither of those two knows about the other.
+
 import './styles/style.css';
 import { fetchWeatherByLocation } from './modules/apiService.js';
+import { render } from './modules/domController.js';
 
-console.log('Weather app starting...');
-// Temporary manual test call for this step — task 4 will replace this
-// with a real form submission.
-fetchWeatherByLocation('Lima');
+const callbacks = {
+  onSearch(location) {
+    // Still just console.log() for this step — task 5 will display it
+    // on the page instead.
+    fetchWeatherByLocation(location);
+  },
+};
+
+function init() {
+  render(callbacks);
+}
+
+init();
