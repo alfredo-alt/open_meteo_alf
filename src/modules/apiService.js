@@ -1,7 +1,10 @@
 // apiService.js
 // Single Responsibility: ONLY knows how to talk to the Open-Meteo APIs.
-// Never touches the DOM. For now these functions just return raw data —
-// task 3 will add a separate module to process/shape that data for the app.
+// Never touches the DOM. Raw API responses are handed off to
+// weatherDataProcessor.js, which is a separate module responsible for
+// shaping that data into what the app actually needs.
+
+import { processWeatherData } from './weatherDataProcessor.js';
 
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search';
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
@@ -62,23 +65,23 @@ async function fetchWeatherData(latitude, longitude) {
 }
 
 /**
- * Convenience function that chains both calls: name -> coordinates -> weather.
- * For now, just console.log()s the result, as required by this step.
- * Task 4 will hook this up to the actual search form instead of calling
- * it manually.
+ * Convenience function that chains everything: name -> coordinates ->
+ * raw weather -> processed weather. Returns the small, clean object from
+ * weatherDataProcessor.js, ready for the UI (task 4/5) to use directly.
  */
 async function fetchWeatherByLocation(locationName) {
   const place = await fetchCoordinates(locationName);
 
   if (!place) {
     console.log(`No location found for "${locationName}"`);
-    return;
+    return null;
   }
 
-  const weatherData = await fetchWeatherData(place.latitude, place.longitude);
+  const rawWeatherData = await fetchWeatherData(place.latitude, place.longitude);
+  const weatherData = processWeatherData(rawWeatherData, place);
 
-  console.log('Place:', place);
-  console.log('Raw weather data:', weatherData);
+  console.log('Processed weather data:', weatherData);
+  return weatherData;
 }
 
 export { fetchCoordinates, fetchWeatherData, fetchWeatherByLocation };
