@@ -73,14 +73,12 @@ async function fetchWeatherByLocation(locationName) {
   const place = await fetchCoordinates(locationName);
 
   if (!place) {
-    console.log(`No location found for "${locationName}"`);
     return null;
   }
 
   const rawWeatherData = await fetchWeatherData(place.latitude, place.longitude);
   const weatherData = processWeatherData(rawWeatherData, place);
 
-  console.log('Processed weather data:', weatherData);
   return weatherData;
 }
 

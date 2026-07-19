@@ -4,6 +4,8 @@
 // the orchestrator (index.js), same Dependency Inversion pattern used
 // in the other projects.
 
+import { loadWeatherIcon } from './iconLoader.js';
+
 const appRoot = document.getElementById('app');
 
 function render(callbacks) {
@@ -55,7 +57,7 @@ function renderSearchForm(callbacks) {
   return form;
 }
 
-function showWeatherResult(weatherData, unit, callbacks) {
+async function showWeatherResult(weatherData, unit, callbacks) {
   const resultArea = document.getElementById('result-area');
   resultArea.innerHTML = '';
 
@@ -67,6 +69,14 @@ function showWeatherResult(weatherData, unit, callbacks) {
   const locationEl = document.createElement('h2');
   locationEl.textContent = `${weatherData.location.name}, ${weatherData.location.country}`;
   card.appendChild(locationEl);
+
+  // Icon loaded via dynamic import -- see iconLoader.js for why.
+  const iconUrl = await loadWeatherIcon(weatherData.current.weatherCode);
+  const iconEl = document.createElement('img');
+  iconEl.src = iconUrl;
+  iconEl.alt = weatherData.current.description;
+  iconEl.className = 'weather-card__icon';
+  card.appendChild(iconEl);
 
   const tempEl = document.createElement('p');
   tempEl.className = 'weather-card__temp';
