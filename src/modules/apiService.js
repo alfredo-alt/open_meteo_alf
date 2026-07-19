@@ -41,9 +41,9 @@ async function fetchCoordinates(locationName) {
 
 /**
  * Fetches raw current + daily forecast data for a given pair of coordinates.
- * Both Celsius and Fahrenheit values are requested up front (rather than
- * converting manually), since Open-Meteo can return both directly —
- * this will make the Celsius/Fahrenheit toggle in task 5 trivial.
+ * Only Celsius is requested -- weatherDataProcessor.js derives Fahrenheit
+ * from it locally (Open-Meteo doesn't support returning both units in a
+ * single request, and the conversion is an exact linear formula anyway).
  */
 async function fetchWeatherData(latitude, longitude) {
   const params = new URLSearchParams({
@@ -67,7 +67,9 @@ async function fetchWeatherData(latitude, longitude) {
 /**
  * Convenience function that chains everything: name -> coordinates ->
  * raw weather -> processed weather. Returns the small, clean object from
- * weatherDataProcessor.js, ready for the UI (task 4/5) to use directly.
+ * weatherDataProcessor.js, or null if the location wasn't found.
+ * The caller (index.js) decides how to present either outcome — this
+ * module never logs or touches the DOM.
  */
 async function fetchWeatherByLocation(locationName) {
   const place = await fetchCoordinates(locationName);
@@ -77,9 +79,7 @@ async function fetchWeatherByLocation(locationName) {
   }
 
   const rawWeatherData = await fetchWeatherData(place.latitude, place.longitude);
-  const weatherData = processWeatherData(rawWeatherData, place);
-
-  return weatherData;
+  return processWeatherData(rawWeatherData, place);
 }
 
 export { fetchCoordinates, fetchWeatherData, fetchWeatherByLocation };
