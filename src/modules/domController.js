@@ -55,4 +55,67 @@ function renderSearchForm(callbacks) {
   return form;
 }
 
-export { render };
+function showWeatherResult(weatherData, unit, callbacks) {
+  const resultArea = document.getElementById('result-area');
+  resultArea.innerHTML = '';
+
+  const isCelsius = unit === 'C';
+
+  const card = document.createElement('div');
+  card.className = 'weather-card';
+
+  const locationEl = document.createElement('h2');
+  locationEl.textContent = `${weatherData.location.name}, ${weatherData.location.country}`;
+  card.appendChild(locationEl);
+
+  const tempEl = document.createElement('p');
+  tempEl.className = 'weather-card__temp';
+  tempEl.textContent = isCelsius
+    ? `${weatherData.current.temperatureC}°C`
+    : `${weatherData.current.temperatureF}°F`;
+  card.appendChild(tempEl);
+
+  const descriptionEl = document.createElement('p');
+  descriptionEl.textContent = weatherData.current.description;
+  card.appendChild(descriptionEl);
+
+  const feelsLikeEl = document.createElement('p');
+  feelsLikeEl.className = 'weather-card__detail';
+  feelsLikeEl.textContent = isCelsius
+    ? `Feels like ${weatherData.current.feelsLikeC}°C`
+    : `Feels like ${weatherData.current.feelsLikeF}°F`;
+  card.appendChild(feelsLikeEl);
+
+  const windEl = document.createElement('p');
+  windEl.className = 'weather-card__detail';
+  windEl.textContent = `Wind: ${weatherData.current.windSpeedKmh} km/h`;
+  card.appendChild(windEl);
+
+  const todayEl = document.createElement('p');
+  todayEl.className = 'weather-card__detail';
+  todayEl.textContent = isCelsius
+    ? `Today: ${weatherData.today.minC}°C — ${weatherData.today.maxC}°C`
+    : `Today: ${weatherData.today.minF}°F — ${weatherData.today.maxF}°F`;
+  card.appendChild(todayEl);
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.type = 'button';
+  toggleBtn.className = 'btn btn--secondary';
+  toggleBtn.textContent = isCelsius ? 'Switch to °F' : 'Switch to °C';
+  toggleBtn.addEventListener('click', () => callbacks.onToggleUnit());
+  card.appendChild(toggleBtn);
+
+  resultArea.appendChild(card);
+}
+
+function showLoading() {
+  const resultArea = document.getElementById('result-area');
+  resultArea.innerHTML = '<p class="status-text">Loading...</p>';
+}
+
+function showError(message) {
+  const resultArea = document.getElementById('result-area');
+  resultArea.innerHTML = `<p class="status-text status-text--error">${message}</p>`;
+}
+
+export { render, showWeatherResult, showLoading, showError };

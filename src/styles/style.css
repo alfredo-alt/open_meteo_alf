@@ -40,3 +40,37 @@ body {
   background: #2563eb;
   color: white;
 }
+
+.weather-card {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: #f3f4f6;
+  border-radius: 10px;
+}
+
+.weather-card__temp {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.weather-card__detail {
+  color: #4b5563;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.btn--secondary {
+  background: #374151;
+  color: white;
+  margin-top: 1rem;
+}
+
+.status-text {
+  color: #6b7280;
+  margin-top: 1.5rem;
+}
+
+.status-text--error {
+  color: #dc2626;
+}
