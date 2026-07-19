@@ -41,6 +41,7 @@ function renderSearchForm(callbacks) {
 
   const submitBtn = document.createElement('button');
   submitBtn.type = 'submit';
+  submitBtn.id = 'search-submit-btn';
   submitBtn.textContent = 'Get Weather';
   submitBtn.className = 'btn btn--primary';
 
@@ -116,16 +117,31 @@ async function showWeatherResult(weatherData, unit, callbacks) {
   card.appendChild(toggleBtn);
 
   resultArea.appendChild(card);
+  reenableSubmitButton();
 }
 
 function showLoading() {
   const resultArea = document.getElementById('result-area');
-  resultArea.innerHTML = '<p class="status-text">Loading...</p>';
+  resultArea.innerHTML = `
+    <div class="loading">
+      <div class="loading__spinner"></div>
+      <p class="loading__text">Fetching weather...</p>
+    </div>
+  `;
+
+  const submitBtn = document.getElementById('search-submit-btn');
+  if (submitBtn) submitBtn.disabled = true;
+}
+
+function reenableSubmitButton() {
+  const submitBtn = document.getElementById('search-submit-btn');
+  if (submitBtn) submitBtn.disabled = false;
 }
 
 function showError(message) {
   const resultArea = document.getElementById('result-area');
   resultArea.innerHTML = `<p class="status-text status-text--error">${message}</p>`;
+  reenableSubmitButton();
 }
 
 export { render, showWeatherResult, showLoading, showError };
